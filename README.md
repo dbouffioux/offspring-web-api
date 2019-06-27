@@ -1,4 +1,4 @@
-﻿# offspring-web-api #
+﻿# OFFSPRING WEB API #
 
 LUNDI 27/06/2019
 ## EN PARLER DE MANIERE PLUS DETAILLEE !! Pour l'évaluation de fin de TP il faudra dire comment on s'y est pris précisément ##
