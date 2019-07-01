@@ -23,6 +23,7 @@ public class DataRepository {
 	}
 	
 	protected Connection createConnection() throws SQLException {
+
 		return DriverManager.getConnection(url, user, password);
 	}
 	
@@ -44,7 +45,6 @@ public class DataRepository {
 			throw new RuntimeException(sqle);
 		}
 		return list;
-		
 	}
 
 	private Activity createActivity(ResultSet rs) throws SQLException {
