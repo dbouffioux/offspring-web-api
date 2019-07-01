@@ -15,7 +15,10 @@ LUNDI 27/06/2019
 
 LUNDI 01/07/2019
 
--
+- Correction des contraintes en DB
+- Ajout d'un trello pour le scrum
+- Ajout d'un projet angular vide push sur git et partagé entre équipes
+- 
 
 ## how to create branch (local and distant) ##
 
