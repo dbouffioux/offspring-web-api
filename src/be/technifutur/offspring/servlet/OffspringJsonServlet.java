@@ -1,8 +1,10 @@
 package be.technifutur.offspring.servlet;
 
 import java.io.FileInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -12,6 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import be.technifutur.offspring.beans.Activity;
+import be.technifutur.offspring.repository.DataRepository;
+
 
 /**
  * Servlet implementation class OffspringJsonServlet
@@ -19,7 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/json/*")
 public class OffspringJsonServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	protected DataRepository repository;
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		
@@ -45,7 +53,7 @@ public class OffspringJsonServlet extends HttpServlet {
 			String password = properties.getProperty("database.password");
 			
 			// instanciate repository
-			//repository = new DvdRentalJdbcRepositoryImpl(url, user, password);
+			DataRepository repository = new DataRepository(url, user, password);
 		} catch(Exception e) {
 			throw new ServletException(e);
 		}
@@ -58,6 +66,24 @@ public class OffspringJsonServlet extends HttpServlet {
 		
 		// get pathinfo
 		String pathInfo = request.getPathInfo();
+		try {
+			if (pathInfo.startsWith("/activity")) {
+				String[] parts = pathInfo.split("/");
+		
+				// generate JSON
+				List<Activity> film = repository.findAllActivity();
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(film);
+				
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write(json);
+			}
+		}
+		catch(Exception e) {
+			response.setStatus(404);
+			throw new ServletException(e);
+		}
 	}
 
 	/**
