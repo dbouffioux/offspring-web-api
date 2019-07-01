@@ -1,7 +1,6 @@
 ﻿# OFFSPRING WEB API #
 
 LUNDI 27/06/2019
-## EN PARLER DE MANIERE PLUS DETAILLEE !! Pour l'évaluation de fin de TP il faudra dire comment on s'y est pris précisément ##
 
 - Séparation du projet en deux répos github : 1 pour l'api, 1 pour le front web
 - Mise en place SCRUM 
