@@ -17,10 +17,10 @@ INSERT INTO public.person(
 	INSERT INTO public.activity(
 	name, "startDate", "endDate", creator_id)
 	VALUES ('Kayak', '2019-08-01 08:30:00', '2019-08-01 12:30:00', 5);
-	
 	INSERT INTO public.activity(
 	name, "startDate", "endDate", creator_id)
 	VALUES ('Counter Strike', '2019-09-01 08:30:00', '2019-09-01 12:30:00', 6);
+	
 	
 	INSERT INTO public.registration(
 	id_person, id_activity)
