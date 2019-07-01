@@ -30,7 +30,7 @@ public class DataRepository {
 	}
 
 	public List<Activity> findAllActivity() {
-		
+		System.out.println("in find all");
 		List<Activity> list = new ArrayList<>();
 		String sql = "SELECT name as activity_name " + "FROM activity";
 		try (Connection connection = createConnection();

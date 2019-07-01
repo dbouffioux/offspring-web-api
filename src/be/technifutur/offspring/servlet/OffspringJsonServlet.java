@@ -71,9 +71,10 @@ public class OffspringJsonServlet extends HttpServlet {
 			if (pathInfo.startsWith("/activity")) {
 		
 				// generate JSON
-				List<Activity> film = repository.findAllActivity();
+				System.out.println("before findall"+ repository);
+				List<Activity> activity = repository.findAllActivity();
 				ObjectMapper mapper = new ObjectMapper();
-				String json = mapper.writeValueAsString(film);
+				String json = mapper.writeValueAsString(activity);
 				
 				// set response content
 				response.setContentType("application/json");
