@@ -53,7 +53,7 @@ public class OffspringJsonServlet extends HttpServlet {
 			String password = properties.getProperty("database.password");
 			
 			// instanciate repository
-			DataRepository repository = new DataRepository(url, user, password);
+			repository = new DataRepository(url, user, password);
 		} catch(Exception e) {
 			throw new ServletException(e);
 		}
@@ -71,8 +71,8 @@ public class OffspringJsonServlet extends HttpServlet {
 			if (pathInfo.startsWith("/activity")) {
 		
 				// generate JSON
-				System.out.println("before findall"+ repository);
 				List<Activity> activity = repository.findAllActivity();
+				System.out.println(activity);
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(activity);
 				
