@@ -72,16 +72,12 @@ public class OffspringJsonServlet extends HttpServlet {
 		
 				// generate JSON
 				List<Activity> activity = repository.findAllActivity();
-				System.out.println(activity);
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(activity);
 				
 				// set response content
 				response.setContentType("application/json");
 				response.addHeader("Access-Control-Allow-Origin", "*");
-		        /*response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-		        response.addHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
-		        response.addHeader("Access-Control-Max-Age", "1728000");*/
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(json);
 			}

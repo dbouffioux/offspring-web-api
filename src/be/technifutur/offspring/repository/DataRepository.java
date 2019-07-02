@@ -1,10 +1,15 @@
 package be.technifutur.offspring.repository;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +32,16 @@ public class DataRepository {
 	}
 
 	public List<Activity> findAllActivity() {
-		System.out.println("in find all");
 		List<Activity> list = new ArrayList<>();
-		String sql = "SELECT name as activity_name " + "FROM activity";
+		String sql = "SELECT name as activity_name, "
+				+ "id as activity_id, "
+				+ "\"startDate\" as start_date, "
+				+ "\"startTime\" as start_date, "
+				+ "\"endDate\" as end_date, "
+				+ "\"endTime\" as end_time, "
+				+ "creator_id as creatorId, "
+				+ "event_id as event_id " 
+		+ "FROM activity";
 		try (Connection connection = createConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sql)) {
@@ -45,11 +57,18 @@ public class DataRepository {
 	}
 
 	private Activity createActivity(ResultSet rs) throws SQLException {
+		System.out.println("creation");
+		int id = rs.getInt("activity_id");
 		String name = rs.getString("activity_name");
-		Activity activity = new Activity(name);
+		Date dateDebut = rs.getDate("start_date");
+		Time heureDebut = rs.getTime("start_time");
+		Date dateFin = rs.getDate("end_date");
+		Time heureFin = rs.getTime("end_time");
+		int creatorId = rs.getInt("creatorId");
+		int eventId = rs.getInt("eventId");
+		
+		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, creatorId, eventId);
 		return activity;
-	}
-
-	
+	}	
 
 }
