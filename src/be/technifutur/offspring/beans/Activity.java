@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 public class Activity {
 	private int id;
@@ -13,8 +14,28 @@ public class Activity {
 	private LocalTime heureDebut;
 	private LocalDate dateFin;
 	private LocalTime heureFin;
-	private int creatorId;
+	private Person creator;
 	private int eventId;
+	List<Person> participants;
+	
+	public Activity(int id, String name, LocalDate dateDebut, LocalTime heureDebut, LocalDate dateFin, LocalTime heureFin, Person creator,
+			int eventId, List<Person> participants) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.dateDebut = dateDebut;
+		this.heureDebut = heureDebut;
+		this.dateFin = dateFin;
+		this.heureFin = heureFin;
+		this.creator = creator;
+		this.eventId = eventId;
+		this.participants = participants;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	/**
 	 * @return the id
 	 */
@@ -22,11 +43,21 @@ public class Activity {
 		return id;
 	}
 	/**
+	 * @return the participants
+	 */
+	public List<Person> getParticipants() {
+		return participants;
+	}
+	/**
+	 * @param participants the participants to set
+	 */
+	public void setParticipants(List<Person> participants) {
+		this.participants = participants;
+	}
+	/**
 	 * @param id the id to set
 	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 	/**
 	 * @return the name
 	 */
@@ -90,14 +121,14 @@ public class Activity {
 	/**
 	 * @return the creatorId
 	 */
-	public int getCreatorId() {
-		return creatorId;
+	public Person getCreator() {
+		return creator;
 	}
 	/**
 	 * @param creatorId the creatorId to set
 	 */
-	public void setCreatorId(int creatorId) {
-		this.creatorId = creatorId;
+	public void setCreator(Person creator) {
+		this.creator = creator;
 	}
 	/**
 	 * @return the eventId
@@ -111,22 +142,5 @@ public class Activity {
 	public void setEventId(int eventId) {
 		this.eventId = eventId;
 	}
-	public Activity(int id, String name, LocalDate dateDebut2, LocalTime heureDebut2, LocalDate dateFin2, LocalTime heureFin2, int creatorId,
-			int eventId) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.dateDebut = dateDebut2;
-		this.heureDebut = heureDebut2;
-		this.dateFin = dateFin2;
-		this.heureFin = heureFin2;
-		this.creatorId = creatorId;
-		this.eventId = eventId;
-	}
-	
-	
-	
-	
-	
-	
+
 }
