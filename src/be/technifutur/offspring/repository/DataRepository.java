@@ -16,6 +16,7 @@ import java.util.List;
 
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
+import be.technifutur.offspring.beans.Person;
 
 public class DataRepository {
 	private String url;
@@ -90,6 +91,39 @@ public class DataRepository {
 			throw new RuntimeException(sqle);
 		}
 		return list;
+	}
+
+	public Person findOnePersonById(int id) {
+		
+		Person person = null;
+		String sql = "SELECT * FROM Person WHERE id = ? ";
+		
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)) 
+		{
+			statement.setInt(1, id);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					person = createPerson(resultSet);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		return person;
+	}
+	
+	private Person createPerson(ResultSet resultSet) throws SQLException {
+		Person person = null;
+		
+		int id = resultSet.getInt("id");
+		String firstName = resultSet.getString("firstName");
+		String lastName = resultSet.getString("lastName");
+		String email = resultSet.getString("email");
+		String phoneNumber = resultSet.getString("phoneNumber");
+		
+		return new Person(id, firstName, lastName, email, phoneNumber);
 	}
 
 	private Event createEvent(ResultSet rs) throws SQLException {

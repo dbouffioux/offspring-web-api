@@ -56,14 +56,13 @@ public class Person {
 		this.password = password;
 	}
 
-	public Person(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
+	public Person(int id, String firstName, String lastName, String email, String phoneNumber) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
-		this.password = password;
 	}
 }
 
