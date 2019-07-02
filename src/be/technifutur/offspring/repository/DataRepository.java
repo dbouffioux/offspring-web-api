@@ -36,7 +36,7 @@ public class DataRepository {
 		String sql = "SELECT name as activity_name, "
 				+ "id as activity_id, "
 				+ "\"startDate\" as start_date, "
-				+ "\"startTime\" as start_date, "
+				+ "\"startTime\" as start_time, "
 				+ "\"endDate\" as end_date, "
 				+ "\"endTime\" as end_time, "
 				+ "creator_id as creatorId, "
