@@ -60,10 +60,10 @@ public class DataRepository {
 		System.out.println("creation");
 		int id = rs.getInt("activity_id");
 		String name = rs.getString("activity_name");
-		Date dateDebut = rs.getDate("start_date");
-		Time heureDebut = rs.getTime("start_time");
-		Date dateFin = rs.getDate("end_date");
-		Time heureFin = rs.getTime("end_time");
+		LocalDate dateDebut = LocalDate.parse(rs.getDate("start_date").toString());
+		LocalTime heureDebut = LocalTime.parse(rs.getDate("start_time").toString());
+		LocalDate dateFin = LocalDate.parse(rs.getDate("end_date").toString());
+		LocalTime heureFin = LocalTime.parse(rs.getDate("end_time").toString());
 		int creatorId = rs.getInt("creator_id");
 		int eventId = rs.getInt("event_id");
 		

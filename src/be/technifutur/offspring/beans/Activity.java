@@ -1,16 +1,18 @@
 package be.technifutur.offspring.beans;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class Activity {
 	private int id;
 	private String name;	
-	private Date dateDebut;
-	private Time heureDebut;
-	private Date dateFin;
-	private Time heureFin;
+	private LocalDate dateDebut;
+	private LocalTime heureDebut;
+	private LocalDate dateFin;
+	private LocalTime heureFin;
 	private int creatorId;
 	private int eventId;
 	/**
@@ -40,43 +42,43 @@ public class Activity {
 	/**
 	 * @return the dateDebut
 	 */
-	public Date getDateDebut() {
+	public LocalDate getDateDebut() {
 		return dateDebut;
 	}
 	/**
 	 * @param dateDebut the dateDebut to set
 	 */
-	public void setDateDebut(Date dateDebut) {
+	public void setDateDebut(LocalDate dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 	/**
 	 * @return the heureDebut
 	 */
-	public Time getHeureDebut() {
+	public LocalTime getHeureDebut() {
 		return heureDebut;
 	}
 	/**
 	 * @param heureDebut the heureDebut to set
 	 */
-	public void setHeureDebut(Time heureDebut) {
+	public void setHeureDebut(LocalTime heureDebut) {
 		this.heureDebut = heureDebut;
 	}
 	/**
 	 * @return the dateFin
 	 */
-	public Date getDateFin() {
+	public LocalDate getDateFin() {
 		return dateFin;
 	}
 	/**
 	 * @param dateFin the dateFin to set
 	 */
-	public void setDateFin(Date dateFin) {
+	public void setDateFin(LocalDate dateFin) {
 		this.dateFin = dateFin;
 	}
 	/**
 	 * @return the heureFin
 	 */
-	public Time getHeureFin() {
+	public LocalTime getHeureFin() {
 		return heureFin;
 	}
 	/**
@@ -109,15 +111,15 @@ public class Activity {
 	public void setEventId(int eventId) {
 		this.eventId = eventId;
 	}
-	public Activity(int id, String name, Date dateDebut, Time heureDebut, Date dateFin, Time heureFin, int creatorId,
+	public Activity(int id, String name, LocalDate dateDebut2, LocalTime heureDebut2, LocalDate dateFin2, LocalTime heureFin2, int creatorId,
 			int eventId) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.dateDebut = dateDebut;
-		this.heureDebut = heureDebut;
-		this.dateFin = dateFin;
-		this.heureFin = heureFin;
+		this.dateDebut = dateDebut2;
+		this.heureDebut = heureDebut2;
+		this.dateFin = dateFin2;
+		this.heureFin = heureFin2;
 		this.creatorId = creatorId;
 		this.eventId = eventId;
 	}
