@@ -3,6 +3,7 @@ package be.technifutur.offspring.beans;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Event {
 	
@@ -11,14 +12,16 @@ public class Event {
 	private LocalDateTime start;
 	private LocalDateTime end;
 	private int creatorId;
+	private List<Activity> listActivity;
 	
-	public Event(int id, String name, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime, int creatorId) {
+	public Event(int id, String name, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime, int creatorId, List<Activity> listActivity) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.start = LocalDateTime.of(startDate, startTime);
 		this.end = LocalDateTime.of(endDate, endTime);
 		this.creatorId = creatorId;
+		this.listActivity = listActivity;
 	}
 	
 	/**
@@ -80,6 +83,14 @@ public class Event {
 	 */
 	public void setCreatorId(int creatorId) {
 		this.creatorId = creatorId;
+	}
+
+	public List<Activity> getListActivity() {
+		return listActivity;
+	}
+
+	public void setListActivity(List<Activity> listActivity) {
+		this.listActivity = listActivity;
 	}
 
 }

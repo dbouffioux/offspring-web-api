@@ -82,10 +82,10 @@ public class OffspringJsonServlet extends HttpServlet {
 				
 				response.getWriter().write(json);
 			} else if (pathInfo.startsWith("/event")) {
-				System.out.println("ok");
 				List<Event> events = repository.findAllEvent();
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(events);
+				
 				
 				
 				response.getWriter().write(json);
