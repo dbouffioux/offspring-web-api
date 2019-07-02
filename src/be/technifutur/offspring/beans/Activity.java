@@ -84,7 +84,7 @@ public class Activity {
 	/**
 	 * @param heureFin the heureFin to set
 	 */
-	public void setHeureFin(Time heureFin) {
+	public void setHeureFin(LocalTime heureFin) {
 		this.heureFin = heureFin;
 	}
 	/**

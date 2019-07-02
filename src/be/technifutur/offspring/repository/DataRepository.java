@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.technifutur.offspring.beans.Activity;
+import be.technifutur.offspring.beans.Event;
 
 public class DataRepository {
 	private String url;
@@ -29,6 +30,24 @@ public class DataRepository {
 
 	protected Connection createConnection() throws SQLException {
 		return DriverManager.getConnection(url, user, password);
+	}
+	
+	public List<Event> findAllEvent(){
+		List<Event> list = new ArrayList<>();
+		String sql = "select * from event";
+		
+		try (Connection connection = createConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sql)) {
+			while (resultSet.next()) {
+				Event activity = createEvent(resultSet);
+				list.add(activity);
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return list ;
 	}
 
 	public List<Activity> findAllActivity() {
@@ -56,14 +75,25 @@ public class DataRepository {
 
 	}
 
+	private Event createEvent(ResultSet rs) throws SQLException {
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		LocalDate startDate = LocalDate.parse(rs.getDate("StartDate").toString());
+		LocalDate endDate = LocalDate.parse(rs.getDate("EndDate").toString());
+		LocalTime startTime = LocalTime.parse(rs.getTime("StartTime").toString());
+		LocalTime endTime = LocalTime.parse(rs.getTime("EndTime").toString());
+		int creatorId = rs.getInt("creator_id");
+		return new Event(id, name, startDate, endDate, startTime, endTime, creatorId);
+	}
+	
 	private Activity createActivity(ResultSet rs) throws SQLException {
-		System.out.println("creation");
 		int id = rs.getInt("activity_id");
 		String name = rs.getString("activity_name");
 		LocalDate dateDebut = LocalDate.parse(rs.getDate("start_date").toString());
-		LocalTime heureDebut = LocalTime.parse(rs.getDate("start_time").toString());
+		System.out.println("test"+rs.getTime("start_time"));
+		LocalTime heureDebut = LocalTime.parse(rs.getTime("start_time").toString());
 		LocalDate dateFin = LocalDate.parse(rs.getDate("end_date").toString());
-		LocalTime heureFin = LocalTime.parse(rs.getDate("end_time").toString());
+		LocalTime heureFin = LocalTime.parse(rs.getTime("end_time").toString());
 		int creatorId = rs.getInt("creator_id");
 		int eventId = rs.getInt("event_id");
 		

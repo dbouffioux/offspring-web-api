@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import be.technifutur.offspring.beans.Activity;
+import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.repository.DataRepository;
 
 
@@ -66,7 +67,10 @@ public class OffspringJsonServlet extends HttpServlet {
 		
 		// get pathinfo
 		String pathInfo = request.getPathInfo();
-
+		// set response content
+		response.setContentType("application/json");
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.setCharacterEncoding("UTF-8");
 		try {
 			if (pathInfo.startsWith("/activity")) {
 		
@@ -75,10 +79,15 @@ public class OffspringJsonServlet extends HttpServlet {
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(activity);
 				
-				// set response content
-				response.setContentType("application/json");
-				response.addHeader("Access-Control-Allow-Origin", "*");
-				response.setCharacterEncoding("UTF-8");
+				
+				response.getWriter().write(json);
+			} else if (pathInfo.startsWith("/event")) {
+				System.out.println("ok");
+				List<Event> events = repository.findAllEvent();
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(events);
+				
+				
 				response.getWriter().write(json);
 			}
 		}
