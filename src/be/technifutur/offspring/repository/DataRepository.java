@@ -114,6 +114,30 @@ public class DataRepository {
 		return person;
 	}
 	
+	public List<Person> findAllPersonByActivityId(int id){
+		List<Person> personList = new ArrayList<>();
+		String sql = "SELECT p.id, p.email, p.\"lastName\", p.\"firstName\", p.\"phoneNumber\" " + 
+				"FROM person p " + 
+				"INNER JOIN registration r ON r.id_person = p.id " + 
+				"WHERE r.id_activity = ? ";
+		
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)) 
+		{
+			statement.setInt(1, id);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					Person person = this.createPerson(resultSet);
+					personList.add(person);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		return personList;
+	}
+	
 	private Person createPerson(ResultSet resultSet) throws SQLException {
 		Person person = null;
 		
@@ -148,7 +172,10 @@ public class DataRepository {
 		int creatorId = rs.getInt("creator_id");
 		int eventId = rs.getInt("event_id");
 
-		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, creatorId, eventId);
+		Person person = this.findOnePersonById(creatorId);
+		List<Person> participants = this.findAllPersonByActivityId(id);
+
+		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, person, eventId, participants);
 		return activity;
 	}
 
