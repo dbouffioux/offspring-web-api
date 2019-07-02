@@ -22,6 +22,7 @@ SET row_security = off;
 -- Name: offspring; Type: DATABASE; Schema: -; Owner: postgres
 --
 
+DROP DATABASE offspring
 CREATE DATABASE offspring WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'French_Belgium.1252' LC_CTYPE = 'French_Belgium.1252';
 
 

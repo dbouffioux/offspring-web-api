@@ -39,8 +39,8 @@ public class DataRepository {
 				+ "\"startTime\" as start_time, "
 				+ "\"endDate\" as end_date, "
 				+ "\"endTime\" as end_time, "
-				+ "creator_id as creatorId, "
-				+ "event_id as event_id " 
+				+ "creator_id as creator_id, "
+				+ "event_id as event_id "
 		+ "FROM activity";
 		try (Connection connection = createConnection();
 				Statement statement = connection.createStatement();
@@ -64,8 +64,8 @@ public class DataRepository {
 		Time heureDebut = rs.getTime("start_time");
 		Date dateFin = rs.getDate("end_date");
 		Time heureFin = rs.getTime("end_time");
-		int creatorId = rs.getInt("creatorId");
-		int eventId = rs.getInt("eventId");
+		int creatorId = rs.getInt("creator_id");
+		int eventId = rs.getInt("event_id");
 		
 		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, creatorId, eventId);
 		return activity;
