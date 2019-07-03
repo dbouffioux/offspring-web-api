@@ -125,10 +125,10 @@ public class OffspringJsonServlet extends HttpServlet {
 		}
 		
 		// set response content
+		this.setHeaders(response);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
-		this.setHeaders(response);
 	}
 	
 	private void setHeaders( HttpServletResponse response ) {
