@@ -117,7 +117,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					person = createPerson(resultSet);
+					person = createPersonFromResultset(resultSet);
 				}
 			}
 		} catch (SQLException sqle) {
@@ -139,7 +139,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					result = createPerson(resultSet);
+					result = createPersonFromResultset(resultSet);
 				}
 			}
 		} catch (SQLException sqle) {
