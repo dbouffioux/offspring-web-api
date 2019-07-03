@@ -14,6 +14,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
@@ -79,9 +82,14 @@ public class DataRepository {
 				+ "\"startTime\" as start_time, " + "\"endDate\" as end_date, " + "\"endTime\" as end_time, "
 				+ "creator_id as creator_id, " + "event_id as event_id " + "FROM activity " + "WHERE event_id = ? ";
 
-		try (Connection connection = createConnection();
-				PreparedStatement statement = connection.prepareStatement(sql)) {
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)
+			) {
+			
+			connection.setAutoCommit(true);
 			statement.setInt(1, idEv);
+			
 			try (ResultSet resultSet = statement.executeQuery();) {
 				while (resultSet.next()) {
 					Activity activity = createActivity(resultSet);
@@ -104,7 +112,9 @@ public class DataRepository {
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)) 
 		{
+			connection.setAutoCommit(true);
 			statement.setInt(1, id);
+			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
 					person = createPerson(resultSet);
@@ -116,18 +126,20 @@ public class DataRepository {
 		return person;
 	}
 	
-	private boolean findOnePersonByEmail(String email) {
-		boolean result = false;
+	private Person findOnePersonByEmail(String email) {
+		Person result = null;
 		String sql = "SELECT * FROM Person WHERE email = ? ";
 		
 		try (
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)) 
 		{
+			connection.setAutoCommit(true);
 			statement.setString(1, email);
+			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					result = true;
+					result = createPerson(resultSet);
 				}
 			}
 		} catch (SQLException sqle) {
@@ -145,8 +157,10 @@ public class DataRepository {
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)) 
 		{
+			connection.setAutoCommit(true);
 			statement.setString(1, email);
 			statement.setString(2, password);
+			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
 					result = true;
@@ -169,7 +183,9 @@ public class DataRepository {
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)) 
 		{
+			connection.setAutoCommit(true);
 			statement.setInt(1, id);
+			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					Person person = this.createPerson(resultSet);
@@ -223,50 +239,75 @@ public class DataRepository {
 		return activity;
 	}
 
-	public String checkLogin(CreateLoginParameters parameters) {
+	public String checkLogin(CreateLoginParameters parameters) throws JsonProcessingException {
 
 		String email = parameters.getEmail();
 		String password = parameters.getPassword();
-		String result = "{\"error\": null}";
+		String result = null;
+		Person person = this.findOnePersonByEmail(email);
 		
-		if (!this.findOnePersonByEmail(email)) {
+		if (person != null) {
 			result = "{\"error\": \"User does not exist\"}";
 		}
 		else if (!this.findOnePersonByEmailAndPassword(email, password)) {
 			result = "{\"error\": \"Password incorrect\"}";
 		}
+		else {
+			ObjectMapper Obj = new ObjectMapper();
+			result = Obj.writeValueAsString(person);
+		}
 		
 		return result;
 	}
 
-	public String registerPerson(CreatePersonParameters parameters) {
+	public String registerPerson(CreatePersonParameters parameters) throws JsonProcessingException {
 
 		String email = parameters.getEmail();
 		String result = "{\"error\": null, \"person\": null}";
 		
-		if (this.findOnePersonByEmail(email)) {
+		if (this.findOnePersonByEmail(email) != null) {
 			result = "{\"error\": \"User does exist with this email address\"}";
 		}
 		else {
-			Person person = this.addPerson(parameters);
-			result = "{"
-					+ "\"error\": null,"
-					+ "\"person\": {"
-					+ " "
-					+ "		},"
-					+ " }";
+			Person person = this.insertPerson(parameters);
+			ObjectMapper Obj = new ObjectMapper();
+			result = Obj.writeValueAsString(person);
 		}
 		
 		return result;
 	}
 
-	private Person addPerson(CreatePersonParameters parameters) {
+	private Person insertPerson(CreatePersonParameters parameters) {
+		
 		Person person = null;
-		String firstName = parameters.getFirstName();	
-		String lastName	= parameters.getLastName();
-		String email = parameters.getEmail();
-		String password = parameters.getPassword();
-		String phoneNumber = parameters.getPhoneNumber();
+		person.setFirstName(parameters.getFirstName());
+		person.setLastName(parameters.getLastName());
+		person.setEmail(parameters.getEmail());
+		person.setPassword(parameters.getPassword());
+		person.setPhoneNumber(parameters.getPhoneNumber());
+
+		String sql = "INSERT INTO person(firstName, lastName, email, phoneNumber, password) "
+				+ "VALUES (?, ?, ?, ?, ?)";
+		
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)
+		){
+			connection.setAutoCommit(true);
+			statement.setString(1, person.getFirstName());
+			statement.setString(2, person.getLastName());
+			statement.setString(3, person.getEmail());
+			statement.setString(4, person.getPhoneNumber());
+			statement.setString(5, person.getPassword());
+			statement.executeUpdate();
+			
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		Person person = this.insertPerson(parameters);
+		ObjectMapper Obj = new ObjectMapper();
+		result = Obj.writeValueAsString(person);
 		
 		return person;
 	}
