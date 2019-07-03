@@ -71,8 +71,10 @@ public class OffspringJsonServlet extends HttpServlet {
 		// get pathinfo
 		String pathInfo = request.getPathInfo();
 		// set response content
+		this.setHeaders(response);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
+		
 		try {
 			if (pathInfo.startsWith("/activity")) {
 		
