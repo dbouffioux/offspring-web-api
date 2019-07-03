@@ -117,7 +117,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					person = createPerson(resultSet);
+					person = createPersonFromResultset(resultSet);
 				}
 			}
 		} catch (SQLException sqle) {
@@ -139,7 +139,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					result = createPerson(resultSet);
+					result = createPersonFromResultset(resultSet);
 				}
 			}
 		} catch (SQLException sqle) {
@@ -188,7 +188,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
-					Person person = this.createPerson(resultSet);
+					Person person = this.createPersonFromResultset(resultSet);
 					personList.add(person);
 				}
 			}
@@ -198,7 +198,7 @@ public class DataRepository {
 		return personList;
 	}
 	
-	private Person createPerson(ResultSet resultSet) throws SQLException {
+	private Person createPersonFromResultset(ResultSet resultSet) throws SQLException {
 		Person person = null;
 		
 		int id = resultSet.getInt("id");
@@ -246,7 +246,7 @@ public class DataRepository {
 		String result = null;
 		Person person = this.findOnePersonByEmail(email);
 		
-		if (person != null) {
+		if (person == null) {
 			result = "{\"error\": \"User does not exist\"}";
 		}
 		else if (!this.findOnePersonByEmailAndPassword(email, password)) {
@@ -278,28 +278,26 @@ public class DataRepository {
 	}
 
 	private Person insertPerson(CreatePersonParameters parameters) {
-		
-		Person person = null;
-		person.setFirstName(parameters.getFirstName());
-		person.setLastName(parameters.getLastName());
-		person.setEmail(parameters.getEmail());
-		person.setPassword(parameters.getPassword());
-		person.setPhoneNumber(parameters.getPhoneNumber());
 
-		String sql = "INSERT INTO person(firstName, lastName, email, phoneNumber, password) "
+		Person person = null;
+		String sql = "INSERT INTO person(\"firstName\", \"lastName\", email, \"phoneNumber\", password) "
 				+ "VALUES (?, ?, ?, ?, ?)";
+		System.out.println(sql);
+		
 		
 		try (
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)
 		){
 			connection.setAutoCommit(true);
-			statement.setString(1, person.getFirstName());
-			statement.setString(2, person.getLastName());
-			statement.setString(3, person.getEmail());
-			statement.setString(4, person.getPhoneNumber());
-			statement.setString(5, person.getPassword());
+			statement.setString(1, parameters.getFirstName());
+			statement.setString(2, parameters.getLastName());
+			statement.setString(3, parameters.getEmail());
+			statement.setString(4, parameters.getPhoneNumber());
+			statement.setString(5, parameters.getPassword());
 			statement.executeUpdate();
+			
+			person = this.findOnePersonByEmail(parameters.getEmail());
 			
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
