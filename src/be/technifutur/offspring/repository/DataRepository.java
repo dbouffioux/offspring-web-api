@@ -277,36 +277,27 @@ public class DataRepository {
 		return result;
 	}
 
-	private Person createPersonFromParameters(CreatePersonParameters parameters) {
-		
-		Person person = null;
-		person.setFirstName(parameters.getFirstName());
-		person.setLastName(parameters.getLastName());
-		person.setEmail(parameters.getEmail());
-		person.setPassword(parameters.getPassword());
-		person.setPhoneNumber(parameters.getPhoneNumber());
-		
-		return person;
-	}
-	
 	private Person insertPerson(CreatePersonParameters parameters) {
-		
-		Person person = this.createPersonFromParameters(parameters);
 
-		String sql = "INSERT INTO person(firstName, lastName, email, phoneNumber, password) "
+		Person person = null;
+		String sql = "INSERT INTO person(\"firstName\", \"lastName\", email, \"phoneNumber\", password) "
 				+ "VALUES (?, ?, ?, ?, ?)";
+		System.out.println(sql);
+		
 		
 		try (
 			Connection connection = createConnection();
 			PreparedStatement statement = connection.prepareStatement(sql)
 		){
 			connection.setAutoCommit(true);
-			statement.setString(1, person.getFirstName());
-			statement.setString(2, person.getLastName());
-			statement.setString(3, person.getEmail());
-			statement.setString(4, person.getPhoneNumber());
-			statement.setString(5, person.getPassword());
+			statement.setString(1, parameters.getFirstName());
+			statement.setString(2, parameters.getLastName());
+			statement.setString(3, parameters.getEmail());
+			statement.setString(4, parameters.getPhoneNumber());
+			statement.setString(5, parameters.getPassword());
 			statement.executeUpdate();
+			
+			person = this.findOnePersonByEmail(parameters.getEmail());
 			
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
