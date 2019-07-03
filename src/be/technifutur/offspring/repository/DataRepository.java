@@ -18,6 +18,7 @@ import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
+import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
 public class DataRepository {
 	private String url;
@@ -236,5 +237,37 @@ public class DataRepository {
 		}
 		
 		return result;
+	}
+
+	public String registerPerson(CreatePersonParameters parameters) {
+
+		String email = parameters.getEmail();
+		String result = "{\"error\": null, \"person\": null}";
+		
+		if (this.findOnePersonByEmail(email)) {
+			result = "{\"error\": \"User does exist with this email address\"}";
+		}
+		else {
+			Person person = this.addPerson(parameters);
+			result = "{"
+					+ "\"error\": null,"
+					+ "\"person\": {"
+					+ " "
+					+ "		},"
+					+ " }";
+		}
+		
+		return result;
+	}
+
+	private Person addPerson(CreatePersonParameters parameters) {
+		Person person = null;
+		String firstName = parameters.getFirstName();	
+		String lastName	= parameters.getLastName();
+		String email = parameters.getEmail();
+		String password = parameters.getPassword();
+		String phoneNumber = parameters.getPhoneNumber();
+		
+		return person;
 	}
 }

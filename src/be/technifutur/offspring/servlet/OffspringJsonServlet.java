@@ -21,6 +21,7 @@ import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.repository.DataRepository;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
+import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
 
 /**
@@ -108,11 +109,15 @@ public class OffspringJsonServlet extends HttpServlet {
 
 		try {
 			if (pathInfo.startsWith("/login")) {
-				CreateLoginParameters parameters 
-				= mapper.readValue(request.getInputStream(), CreateLoginParameters.class);
+				CreateLoginParameters parameters
+					= mapper.readValue(request.getInputStream(), CreateLoginParameters.class);
 				json = repository.checkLogin(parameters);
 			}
-
+			else if (pathInfo.startsWith("/register")) {
+				CreatePersonParameters parameters 
+					= mapper.readValue(request.getInputStream(), CreatePersonParameters.class);
+				json = repository.registerPerson(parameters);
+			}
 		}
 		catch(Exception e) {
 			response.setStatus(404);
