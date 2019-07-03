@@ -2,6 +2,7 @@ package be.technifutur.offspring.servlet;
 
 import java.io.FileInputStream;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.repository.DataRepository;
+import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 
 
 /**
@@ -69,7 +71,6 @@ public class OffspringJsonServlet extends HttpServlet {
 		String pathInfo = request.getPathInfo();
 		// set response content
 		response.setContentType("application/json");
-		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.setCharacterEncoding("UTF-8");
 		try {
 			if (pathInfo.startsWith("/activity")) {
@@ -87,7 +88,6 @@ public class OffspringJsonServlet extends HttpServlet {
 				String json = mapper.writeValueAsString(events);
 				
 				
-				
 				response.getWriter().write(json);
 			}
 		}
@@ -101,6 +101,39 @@ public class OffspringJsonServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// get pathinfo
+		ObjectMapper mapper= new ObjectMapper();
+		String pathInfo = request.getPathInfo();
+		String json = null;
+
+		try {
+			if (pathInfo.startsWith("/login")) {
+				CreateLoginParameters parameters 
+				= mapper.readValue(request.getInputStream(), CreateLoginParameters.class);
+				json = repository.checkLogin(parameters);
+			}
+
+		}
+		catch(Exception e) {
+			response.setStatus(404);
+			throw new ServletException(e);
+		}
 		
+		// set response content
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
+	}
+	
+	@Override
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		super.doOptions(request, response);
+		setHeaders(response);
+	}
+	
+	private void setHeaders( HttpServletResponse response ) {
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "*");
+		response.addHeader("Access-Control-Allow-Headers", "*");
 	}
 }

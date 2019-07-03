@@ -17,6 +17,7 @@ import java.util.List;
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
+import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 
 public class DataRepository {
 	private String url;
@@ -114,6 +115,48 @@ public class DataRepository {
 		return person;
 	}
 	
+	private boolean findOnePersonByEmail(String email) {
+		boolean result = false;
+		String sql = "SELECT * FROM Person WHERE email = ? ";
+		
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)) 
+		{
+			statement.setString(1, email);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					result = true;
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+
+		return result;
+	}
+	
+	private boolean findOnePersonByEmailAndPassword(String email, String password) {
+		boolean result = false;
+		String sql = "SELECT * FROM Person WHERE email = ? AND password = ? ";
+		
+		try (
+			Connection connection = createConnection();
+			PreparedStatement statement = connection.prepareStatement(sql)) 
+		{
+			statement.setString(1, email);
+			statement.setString(2, password);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					result = true;
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		return result;
+	}
+	
 	public List<Person> findAllPersonByActivityId(int id){
 		List<Person> personList = new ArrayList<>();
 		String sql = "SELECT p.id, p.email, p.\"lastName\", p.\"firstName\", p.\"phoneNumber\" " + 
@@ -179,4 +222,19 @@ public class DataRepository {
 		return activity;
 	}
 
+	public String checkLogin(CreateLoginParameters parameters) {
+
+		String email = parameters.getEmail();
+		String password = parameters.getPassword();
+		String result = "{\"error\": null}";
+		
+		if (!this.findOnePersonByEmail(email)) {
+			result = "{\"error\": \"User does not exist\"}";
+		}
+		else if (!this.findOnePersonByEmailAndPassword(email, password)) {
+			result = "{\"error\": \"Password incorrect\"}";
+		}
+		
+		return result;
+	}
 }
