@@ -188,7 +188,7 @@ public class DataRepository {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
-					Person person = this.createPerson(resultSet);
+					Person person = this.createPersonFromResultset(resultSet);
 					personList.add(person);
 				}
 			}
@@ -198,7 +198,7 @@ public class DataRepository {
 		return personList;
 	}
 	
-	private Person createPerson(ResultSet resultSet) throws SQLException {
+	private Person createPersonFromResultset(ResultSet resultSet) throws SQLException {
 		Person person = null;
 		
 		int id = resultSet.getInt("id");
@@ -277,7 +277,7 @@ public class DataRepository {
 		return result;
 	}
 
-	private Person insertPerson(CreatePersonParameters parameters) {
+	private Person createPersonFromParameters(CreatePersonParameters parameters) {
 		
 		Person person = null;
 		person.setFirstName(parameters.getFirstName());
@@ -285,6 +285,13 @@ public class DataRepository {
 		person.setEmail(parameters.getEmail());
 		person.setPassword(parameters.getPassword());
 		person.setPhoneNumber(parameters.getPhoneNumber());
+		
+		return person;
+	}
+	
+	private Person insertPerson(CreatePersonParameters parameters) {
+		
+		Person person = this.createPersonFromParameters(parameters);
 
 		String sql = "INSERT INTO person(firstName, lastName, email, phoneNumber, password) "
 				+ "VALUES (?, ?, ?, ?, ?)";
