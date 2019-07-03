@@ -305,10 +305,6 @@ public class DataRepository {
 			throw new RuntimeException(sqle);
 		}
 		
-		Person person = this.insertPerson(parameters);
-		ObjectMapper Obj = new ObjectMapper();
-		result = Obj.writeValueAsString(person);
-		
 		return person;
 	}
 }
