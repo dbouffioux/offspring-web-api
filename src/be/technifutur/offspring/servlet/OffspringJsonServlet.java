@@ -131,6 +131,12 @@ public class OffspringJsonServlet extends HttpServlet {
 		response.getWriter().write(json);
 	}
 	
+	@Override
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		super.doOptions(request, response);
+		this.setHeaders(response);
+	}
+	
 	private void setHeaders( HttpServletResponse response ) {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Methods", "*");
