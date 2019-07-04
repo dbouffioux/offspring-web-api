@@ -60,9 +60,9 @@ public class DataRepository {
 
 	public List<Activity> findAllActivity() {
 		List<Activity> list = new ArrayList<>();
-		String sql = "SELECT name as activity_name, " + "id as activity_id, " + "\"startDate\" as start_date, "
-				+ "\"startTime\" as start_time, " + "\"endDate\" as end_date, " + "\"endTime\" as end_time, "
-				+ "creator_id as creator_id, " + "event_id as event_id " + "FROM activity";
+		String sql = "SELECT name, " + "id, " + "\"startDate\", "
+				+ "\"startTime\", " + "\"endDate\", " + "\"endTime\" , "
+				+ "creator_id, " + "event_id " + "FROM activity";
 		try (Connection connection = createConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sql)) {
@@ -79,9 +79,9 @@ public class DataRepository {
 
 	public List<Activity> findAllActivityByEventId(int idEv) {
 		List<Activity> list = new ArrayList<>();
-		String sql = "SELECT name as activity_name, " + "id as activity_id, " + "\"startDate\" as start_date, "
-				+ "\"startTime\" as start_time, " + "\"endDate\" as end_date, " + "\"endTime\" as end_time, "
-				+ "creator_id as creator_id, " + "event_id as event_id " + "FROM activity " + "WHERE event_id = ? ";
+		String sql = "SELECT name, " + "id, " + "\"startDate\", "
+				+ "\"startTime\", " + "\"endDate\", " + "\"endTime\", "
+				+ "creator_id , " + "event_id " + "FROM activity " + "WHERE event_id = ? ";
 
 		try (Connection connection = createConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -278,10 +278,10 @@ public class DataRepository {
 		Person person = null;
 		String sql = "INSERT INTO person(\"firstName\", \"lastName\", email, \"phoneNumber\", password) "
 				+ "VALUES (?, ?, ?, ?, ?)";
-		System.out.println(sql);
+		Integer id = null;
 
 		try (Connection connection = createConnection();
-				PreparedStatement statement = connection.prepareStatement(sql)) {
+				PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			connection.setAutoCommit(true);
 			statement.setString(1, parameters.getFirstName());
 			statement.setString(2, parameters.getLastName());
@@ -290,7 +290,12 @@ public class DataRepository {
 			statement.setString(5, parameters.getPassword());
 			statement.executeUpdate();
 
-			person = this.findOnePersonByEmail(parameters.getEmail());
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			}
+			person = this.findOnePersonById(id);
 
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
