@@ -246,11 +246,8 @@ public class DataRepository {
 		String result = null;
 		Person person = this.findOnePersonByEmail(email);
 		
-		if (person == null) {
-			result = "{\"error\": \"User does not exist\"}";
-		}
-		else if (!this.findOnePersonByEmailAndPassword(email, password)) {
-			result = "{\"error\": \"Password incorrect\"}";
+		if (person == null || !this.findOnePersonByEmailAndPassword(email, password)) {
+			result = "{\"error\": \"User or password incorrect\"}";
 		}
 		else {
 			ObjectMapper Obj = new ObjectMapper();
