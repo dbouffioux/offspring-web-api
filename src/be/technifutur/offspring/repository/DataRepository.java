@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
+import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
@@ -82,14 +83,12 @@ public class DataRepository {
 				+ "\"startTime\" as start_time, " + "\"endDate\" as end_date, " + "\"endTime\" as end_time, "
 				+ "creator_id as creator_id, " + "event_id as event_id " + "FROM activity " + "WHERE event_id = ? ";
 
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)
-			) {
-			
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+
 			connection.setAutoCommit(true);
 			statement.setInt(1, idEv);
-			
+
 			try (ResultSet resultSet = statement.executeQuery();) {
 				while (resultSet.next()) {
 					Activity activity = createActivity(resultSet);
@@ -104,17 +103,15 @@ public class DataRepository {
 	}
 
 	public Person findOnePersonById(int id) {
-		
+
 		Person person = null;
 		String sql = "SELECT * FROM Person WHERE id = ? ";
-		
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)) 
-		{
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 			connection.setAutoCommit(true);
 			statement.setInt(1, id);
-			
+
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
 					person = createPersonFromResultset(resultSet);
@@ -125,18 +122,16 @@ public class DataRepository {
 		}
 		return person;
 	}
-	
+
 	private Person findOnePersonByEmail(String email) {
 		Person result = null;
 		String sql = "SELECT * FROM Person WHERE email = ? ";
-		
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)) 
-		{
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 			connection.setAutoCommit(true);
 			statement.setString(1, email);
-			
+
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
 					result = createPersonFromResultset(resultSet);
@@ -148,19 +143,17 @@ public class DataRepository {
 
 		return result;
 	}
-	
+
 	private boolean findOnePersonByEmailAndPassword(String email, String password) {
 		boolean result = false;
 		String sql = "SELECT * FROM Person WHERE email = ? AND password = ? ";
-		
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)) 
-		{
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 			connection.setAutoCommit(true);
 			statement.setString(1, email);
 			statement.setString(2, password);
-			
+
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
 					result = true;
@@ -171,21 +164,17 @@ public class DataRepository {
 		}
 		return result;
 	}
-	
-	public List<Person> findAllPersonByActivityId(int id){
+
+	public List<Person> findAllPersonByActivityId(int id) {
 		List<Person> personList = new ArrayList<>();
-		String sql = "SELECT p.id, p.email, p.\"lastName\", p.\"firstName\", p.\"phoneNumber\" " + 
-				"FROM person p " + 
-				"INNER JOIN registration r ON r.id_person = p.id " + 
-				"WHERE r.id_activity = ? ";
-		
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)) 
-		{
+		String sql = "SELECT p.id, p.email, p.\"lastName\", p.\"firstName\", p.\"phoneNumber\" " + "FROM person p "
+				+ "INNER JOIN registration r ON r.id_person = p.id " + "WHERE r.id_activity = ? ";
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 			connection.setAutoCommit(true);
 			statement.setInt(1, id);
-			
+
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					Person person = this.createPersonFromResultset(resultSet);
@@ -197,16 +186,16 @@ public class DataRepository {
 		}
 		return personList;
 	}
-	
+
 	private Person createPersonFromResultset(ResultSet resultSet) throws SQLException {
 		Person person = null;
-		
+
 		int id = resultSet.getInt("id");
 		String firstName = resultSet.getString("firstName");
 		String lastName = resultSet.getString("lastName");
 		String email = resultSet.getString("email");
 		String phoneNumber = resultSet.getString("phoneNumber");
-		
+
 		return new Person(id, firstName, lastName, email, phoneNumber);
 	}
 
@@ -223,19 +212,29 @@ public class DataRepository {
 	}
 
 	private Activity createActivity(ResultSet rs) throws SQLException {
-		int id = rs.getInt("activity_id");
-		String name = rs.getString("activity_name");
-		LocalDate dateDebut = LocalDate.parse(rs.getDate("start_date").toString());
-		LocalTime heureDebut = LocalTime.parse(rs.getTime("start_time").toString());
-		LocalDate dateFin = LocalDate.parse(rs.getDate("end_date").toString());
-		LocalTime heureFin = LocalTime.parse(rs.getTime("end_time").toString());
+//		int id = rs.getInt(1);
+//		String name = rs.getString(2);
+//		LocalDate dateDebut = LocalDate.parse(rs.getDate(3).toString());
+//		LocalTime heureDebut = LocalTime.parse(rs.getTime(4).toString());
+//		LocalDate dateFin = LocalDate.parse(rs.getDate(5).toString());
+//		LocalTime heureFin = LocalTime.parse(rs.getTime(6).toString());
+//		int creatorId = rs.getInt(7);
+//		int eventId = rs.getInt("event_id");
+		
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		LocalDate dateDebut = LocalDate.parse(rs.getDate("startDate").toString());
+		LocalTime heureDebut = LocalTime.parse(rs.getTime("startTime").toString());
+		LocalDate dateFin = LocalDate.parse(rs.getDate("endDate").toString());
+		LocalTime heureFin = LocalTime.parse(rs.getTime("endTime").toString());
 		int creatorId = rs.getInt("creator_id");
 		int eventId = rs.getInt("event_id");
 
 		Person person = this.findOnePersonById(creatorId);
 		List<Person> participants = this.findAllPersonByActivityId(id);
 
-		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, person, eventId, participants);
+		Activity activity = new Activity(id, name, dateDebut, heureDebut, dateFin, heureFin, person, eventId,
+				participants);
 		return activity;
 	}
 
@@ -245,18 +244,16 @@ public class DataRepository {
 		String password = parameters.getPassword();
 		String result = null;
 		Person person = this.findOnePersonByEmail(email);
-		
+
 		if (person == null) {
 			result = "{\"error\": \"User does not exist\"}";
-		}
-		else if (!this.findOnePersonByEmailAndPassword(email, password)) {
+		} else if (!this.findOnePersonByEmailAndPassword(email, password)) {
 			result = "{\"error\": \"Password incorrect\"}";
-		}
-		else {
+		} else {
 			ObjectMapper Obj = new ObjectMapper();
 			result = Obj.writeValueAsString(person);
 		}
-		
+
 		return result;
 	}
 
@@ -264,16 +261,15 @@ public class DataRepository {
 
 		String email = parameters.getEmail();
 		String result = "{\"error\": null, \"person\": null}";
-		
+
 		if (this.findOnePersonByEmail(email) != null) {
 			result = "{\"error\": \"User does exist with this email address\"}";
-		}
-		else {
+		} else {
 			Person person = this.insertPerson(parameters);
 			ObjectMapper Obj = new ObjectMapper();
 			result = Obj.writeValueAsString(person);
 		}
-		
+
 		return result;
 	}
 
@@ -283,12 +279,9 @@ public class DataRepository {
 		String sql = "INSERT INTO person(\"firstName\", \"lastName\", email, \"phoneNumber\", password) "
 				+ "VALUES (?, ?, ?, ?, ?)";
 		System.out.println(sql);
-		
-		
-		try (
-			Connection connection = createConnection();
-			PreparedStatement statement = connection.prepareStatement(sql)
-		){
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 			connection.setAutoCommit(true);
 			statement.setString(1, parameters.getFirstName());
 			statement.setString(2, parameters.getLastName());
@@ -296,13 +289,83 @@ public class DataRepository {
 			statement.setString(4, parameters.getPhoneNumber());
 			statement.setString(5, parameters.getPassword());
 			statement.executeUpdate();
-			
+
 			person = this.findOnePersonByEmail(parameters.getEmail());
-			
+
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
 		}
-		
+
 		return person;
+	}
+
+	public Activity createNewActivity(CreateActivityParameters parameters) {
+		
+		Integer id = null;
+
+		if (parameters.getName() != null && !parameters.getName().isBlank() && parameters.getDateDebut() != null && parameters.getHeureDebut()!= null && 
+				parameters.getDateFin() != null	&& parameters.getHeureFin() != null && parameters.getCreator() != null && parameters.getEventId() != null) {
+			try (Connection connection = createConnection();) {
+				connection.setAutoCommit(true);
+				id = storeActivityAndReturnGeneratedId(connection, parameters.getName(), parameters.getDateDebut(), parameters.getHeureDebut(),
+						parameters.getDateFin(), parameters.getHeureFin(), parameters.getCreator(),	parameters.getEventId());
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return findActivityById(id);
+	}
+
+	protected Integer storeActivityAndReturnGeneratedId(Connection connection, String name, String dateDebut,
+			String heureDebut, String dateFin, String heureFin, Integer creator, Integer eventId)
+			throws SQLException {
+
+		Integer id = null;
+		
+
+		try (PreparedStatement statement = connection.prepareStatement("INSERT INTO activity(\r\n"
+				+ "	name, \"startDate\", \"endDate\", creator_id, event_id, \"endTime\", \"startTime\")\r\n"
+				+ "	VALUES (?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+			System.out.println(dateDebut);
+			statement.setString(1, name);
+			statement.setDate(2, Date.valueOf(dateDebut));
+			statement.setDate(3, Date.valueOf(dateFin));
+			statement.setInt(4, creator);
+			statement.setInt(5, eventId);
+			statement.setTime(6, Time.valueOf(heureFin));
+			statement.setTime(7, Time.valueOf(heureDebut));
+
+			statement.executeUpdate();
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			}
+		}
+
+		return id;
+	}
+
+	protected Activity findActivityById(Integer id) {
+		Activity activity = null;
+
+		String sql = "SELECT * FROM activity WHERE id = ? ";
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			connection.setAutoCommit(true);
+			statement.setInt(1, id);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					activity = createActivity(resultSet);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+
+		return activity;
 	}
 }
