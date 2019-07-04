@@ -1,7 +1,7 @@
 package be.technifutur.offspring.servlet.parameters;
 
 public class CreatePersonParameters {
-	private String firstName;
+	private String 	firstName;
 	private String  lastName;
 	private String  email;
 	private String  phoneNumber;
