@@ -385,13 +385,14 @@ public class DataRepository {
 			statement.setDate(2, Date.valueOf(dateDebut));
 			statement.setDate(3, Date.valueOf(dateFin));
 			statement.setInt(4, creatorId);
+			System.out.println(heureFin);
 			statement.setTime(5, Time.valueOf(heureFin));
 			statement.setTime(6, Time.valueOf(heureDebut));
 
 			statement.executeUpdate();
 			try (ResultSet rs = statement.getGeneratedKeys()) {
 				if (rs.next()) {
-					id = rs.getInt(1);
+					id = rs.getInt(4);
 				}
 			}
 		}
