@@ -388,11 +388,12 @@ public class DataRepository {
 			
 			sql = "DELETE FROM activity WHERE id = ?";
 			try (PreparedStatement queryNext = connection.prepareStatement(sql)) {
+				
 				queryNext.setInt(1, id);
-				query.executeUpdate();
-				int updatedRows = query.getUpdateCount();
+				queryNext.executeUpdate();
 				connection.commit();
-
+				
+				int updatedRows = queryNext.getUpdateCount();
 				deleted = updatedRows > 0;
 			}
 
