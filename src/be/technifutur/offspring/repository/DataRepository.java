@@ -373,4 +373,33 @@ public class DataRepository {
 
 		return activity;
 	}
+
+	public boolean deleteActivity(int id) {
+		
+		boolean deleted = false;
+		String sql = "DELETE FROM registration WHERE id_activity = ?";
+		
+		try (Connection connection = createConnection();
+			PreparedStatement query = connection.prepareStatement(sql);
+		) {
+			connection.setAutoCommit(false);
+			query.setInt(1, id);
+			query.executeUpdate();
+			
+			sql = "DELETE FROM activity WHERE id = ?";
+			try (PreparedStatement queryNext = connection.prepareStatement(sql)) {
+				queryNext.setInt(1, id);
+				query.executeUpdate();
+				int updatedRows = query.getUpdateCount();
+				connection.commit();
+
+				deleted = updatedRows > 0;
+			}
+
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return deleted;
+	}
 }

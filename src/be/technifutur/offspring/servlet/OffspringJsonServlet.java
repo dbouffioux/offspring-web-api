@@ -133,6 +133,29 @@ public class OffspringJsonServlet extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
 	}
+	
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		String pathInfo = request.getPathInfo();
+		boolean deleted = false;
+		
+		try {
+			if (pathInfo.startsWith("/activity")) {
+				String[] parts = pathInfo.split("/");
+				int id = Integer.parseInt(parts[2]);
+				deleted = this.repository.deleteActivity(id);
+			}
+		} catch (Exception e) {
+			response.setStatus(404);
+			throw new ServletException(e);
+		}
+
+		// set response content
+		this.setHeaders(response);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write("{\"deleted\":" + deleted +"}");
+	}
 
 	@Override
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
