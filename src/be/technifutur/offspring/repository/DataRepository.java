@@ -429,4 +429,52 @@ public class DataRepository {
 
 		return updated;
 	}
+	
+	public boolean deleteEvent(int id) {
+
+		boolean deleted = false;
+	
+		try (Connection connection = createConnection()) {
+			List<Activity> activities = this.findAllActivityByEventId(id);
+			
+			for (Activity activity : activities) {
+				this.deleteActivity(activity.getId());
+			}
+			// delete event at the end
+			String sql = "DELETE FROM event WHERE id = ?";
+			try (PreparedStatement query = connection.prepareStatement(sql)){
+				query.setInt(1, id);
+				query.executeUpdate();
+				int updatedRows = query.getUpdateCount();
+				deleted = updatedRows > 0;
+			}
+			
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return deleted;
+	}
+
+	private Event findEventById(int id) {
+		
+		Event event = null;
+		String sql = "SELECT * FROM Event WHERE id = ?";
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, id);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					event = this.createEvent(resultSet);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return event;
+
+	}
 }
