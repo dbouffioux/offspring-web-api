@@ -20,6 +20,7 @@ import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.repository.DataRepository;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
+import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
@@ -119,8 +120,8 @@ public class OffspringJsonServlet extends HttpServlet {
 			} else if (pathInfo.startsWith("/createActivity")) {
 				CreateActivityParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateActivityParameters.class);
-				System.out.println("in");
-				json = mapper.writeValueAsString(repository.createNewActivity(parameters));				
+				System.out.println(parameters.toString());
+				json = mapper.writeValueAsString(repository.createNewActivity(parameters));
 			}
 		} catch (Exception e) {
 			response.setStatus(404);
@@ -133,21 +134,48 @@ public class OffspringJsonServlet extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
 	}
-	
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
+
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pathInfo = request.getPathInfo();
 		boolean deleted = false;
 		
+
 		try {
 			if (pathInfo.startsWith("/activity")) {
 				String[] parts = pathInfo.split("/");
 				int id = Integer.parseInt(parts[2]);
 				deleted = this.repository.deleteActivity(id);
+				
 			} else if(pathInfo.startsWith("/event")) {
-				String[] parts = pathInfo.split("/");
-				int id = Integer.parseInt(parts[2]);
-				deleted = this.repository.deleteEvent(id);
+ 				String[] parts = pathInfo.split("/");
+ 				int id = Integer.parseInt(parts[2]);
+ 				deleted = this.repository.deleteEvent(id);	
+ 			}
+		} catch (Exception e) {
+			response.setStatus(404);
+			throw new ServletException(e);
+		}
+
+		// set response content
+		this.setHeaders(response);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write("{\"deleted\":" + deleted + "}");
+	}
+
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String pathInfo = request.getPathInfo();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		boolean updated = false;
+
+		try {
+			if (pathInfo.startsWith("/update-activity")) {
+				CreateActivityParametersForUpdate parameters= mapper.readValue(request.getInputStream(),
+						CreateActivityParametersForUpdate.class);
+				updated = this.repository.updateActivity(parameters);
 			}
 		} catch (Exception e) {
 			response.setStatus(404);
@@ -158,7 +186,7 @@ public class OffspringJsonServlet extends HttpServlet {
 		this.setHeaders(response);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write("{\"deleted\":" + deleted +"}");
+		response.getWriter().write("{\"updated\":" + updated + "}");
 	}
 
 	@Override

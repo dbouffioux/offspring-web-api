@@ -21,6 +21,7 @@ import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
+import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
@@ -60,9 +61,8 @@ public class DataRepository {
 
 	public List<Activity> findAllActivity() {
 		List<Activity> list = new ArrayList<>();
-		String sql = "SELECT name, " + "id, " + "\"startDate\", "
-				+ "\"startTime\", " + "\"endDate\", " + "\"endTime\" , "
-				+ "creator_id, " + "event_id " + "FROM activity";
+		String sql = "SELECT name, " + "id, " + "\"startDate\", " + "\"startTime\", " + "\"endDate\", "
+				+ "\"endTime\" , " + "creator_id, " + "event_id " + "FROM activity";
 		try (Connection connection = createConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sql)) {
@@ -79,9 +79,8 @@ public class DataRepository {
 
 	public List<Activity> findAllActivityByEventId(int idEv) {
 		List<Activity> list = new ArrayList<>();
-		String sql = "SELECT name, " + "id, " + "\"startDate\", "
-				+ "\"startTime\", " + "\"endDate\", " + "\"endTime\", "
-				+ "creator_id , " + "event_id " + "FROM activity " + "WHERE event_id = ? ";
+		String sql = "SELECT name, " + "id, " + "\"startDate\", " + "\"startTime\", " + "\"endDate\", "
+				+ "\"endTime\", " + "creator_id , " + "event_id " + "FROM activity " + "WHERE event_id = ? ";
 
 		try (Connection connection = createConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -220,7 +219,7 @@ public class DataRepository {
 //		LocalTime heureFin = LocalTime.parse(rs.getTime(6).toString());
 //		int creatorId = rs.getInt(7);
 //		int eventId = rs.getInt("event_id");
-		
+
 		int id = rs.getInt("id");
 		String name = rs.getString("name");
 		LocalDate dateDebut = LocalDate.parse(rs.getDate("startDate").toString());
@@ -305,15 +304,18 @@ public class DataRepository {
 	}
 
 	public Activity createNewActivity(CreateActivityParameters parameters) {
-		
+
 		Integer id = null;
 
-		if (parameters.getName() != null && !parameters.getName().isBlank() && parameters.getDateDebut() != null && parameters.getHeureDebut()!= null && 
-				parameters.getDateFin() != null	&& parameters.getHeureFin() != null && parameters.getCreator() != null && parameters.getEventId() != null) {
+		if (parameters.getName() != null && !parameters.getName().isBlank() && parameters.getDateDebut() != null
+				&& parameters.getHeureDebut() != null && parameters.getDateFin() != null
+				&& parameters.getHeureFin() != null && parameters.getCreator() != null
+				&& parameters.getEventId() != null) {
 			try (Connection connection = createConnection();) {
 				connection.setAutoCommit(true);
-				id = storeActivityAndReturnGeneratedId(connection, parameters.getName(), parameters.getDateDebut(), parameters.getHeureDebut(),
-						parameters.getDateFin(), parameters.getHeureFin(), parameters.getCreator(),	parameters.getEventId());
+				id = storeActivityAndReturnGeneratedId(connection, parameters.getName(), parameters.getDateDebut(),
+						parameters.getHeureDebut(), parameters.getDateFin(), parameters.getHeureFin(),
+						parameters.getCreator(), parameters.getEventId());
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
@@ -323,11 +325,9 @@ public class DataRepository {
 	}
 
 	protected Integer storeActivityAndReturnGeneratedId(Connection connection, String name, String dateDebut,
-			String heureDebut, String dateFin, String heureFin, Integer creator, Integer eventId)
-			throws SQLException {
+			String heureDebut, String dateFin, String heureFin, Integer creator, Integer eventId) throws SQLException {
 
 		Integer id = null;
-		
 
 		try (PreparedStatement statement = connection.prepareStatement("INSERT INTO activity(\r\n"
 				+ "	name, \"startDate\", \"endDate\", creator_id, event_id, \"endTime\", \"startTime\")\r\n"
@@ -375,24 +375,22 @@ public class DataRepository {
 	}
 
 	public boolean deleteActivity(int id) {
-		
+
 		boolean deleted = false;
 		String sql = "DELETE FROM registration WHERE id_activity = ?";
-		
-		try (Connection connection = createConnection();
-			PreparedStatement query = connection.prepareStatement(sql);
-		) {
+
+		try (Connection connection = createConnection(); PreparedStatement query = connection.prepareStatement(sql);) {
 			connection.setAutoCommit(false);
 			query.setInt(1, id);
 			query.executeUpdate();
-			
+
 			sql = "DELETE FROM activity WHERE id = ?";
 			try (PreparedStatement queryNext = connection.prepareStatement(sql)) {
-				
+
 				queryNext.setInt(1, id);
 				queryNext.executeUpdate();
 				connection.commit();
-				
+
 				int updatedRows = queryNext.getUpdateCount();
 				deleted = updatedRows > 0;
 			}
@@ -400,8 +398,36 @@ public class DataRepository {
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
 		}
-		
+
 		return deleted;
+	}
+
+	public boolean updateActivity(CreateActivityParametersForUpdate parameters) {
+		boolean updated = false;
+
+		String sql = "UPDATE activity"
+				+ "	SET name=?, \"startDate\"=?, \"endDate\"=?, event_id=?, \"endTime\"=?, \"startTime\"=?"
+				+ "	WHERE id = ?";
+
+		try (Connection connection = createConnection(); PreparedStatement query = connection.prepareStatement(sql);) {
+			query.setString(1, parameters.getName());
+			query.setDate(2, Date.valueOf(parameters.getDateDebut()));
+			query.setDate(3, Date.valueOf(parameters.getDateFin()));
+			query.setInt(4, parameters.getEventId());
+			query.setTime(5, Time.valueOf(parameters.getHeureFin()));
+			query.setTime(6, Time.valueOf(parameters.getHeureDebut()));
+			query.setInt(7, parameters.getId());
+
+			query.executeUpdate();
+
+			int updatedRows = query.getUpdateCount();
+			updated = updatedRows > 0;
+
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+
+		return updated;
 	}
 	
 	public boolean deleteEvent(int id) {
@@ -449,5 +475,6 @@ public class DataRepository {
 		}
 		
 		return event;
+
 	}
 }
