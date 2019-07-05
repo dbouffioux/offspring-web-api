@@ -456,6 +456,7 @@ public class DataRepository {
 		return deleted;
 	}
 
+	@SuppressWarnings("unused")
 	private Event findEventById(int id) {
 		
 		Event event = null;
