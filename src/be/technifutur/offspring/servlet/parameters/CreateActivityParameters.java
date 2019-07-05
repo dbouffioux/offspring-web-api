@@ -6,7 +6,7 @@ public class CreateActivityParameters {
 	private String heureDebut;
 	private String dateFin;
 	private String heureFin;
-	private Integer creator;
+	private Integer creatorId;
 	private Integer eventId;
 	
 	public CreateActivityParameters() {
@@ -25,6 +25,16 @@ public class CreateActivityParameters {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "CreateActivityParameters [name=" + name + ", dateDebut=" + dateDebut + ", heureDebut=" + heureDebut
+				+ ", dateFin=" + dateFin + ", heureFin=" + heureFin + ", creator=" + creatorId + ", eventId=" + eventId
+				+ "]";
 	}
 
 	/**
@@ -87,14 +97,14 @@ public class CreateActivityParameters {
 	 * @return the creator
 	 */
 	public Integer getCreator() {
-		return creator;
+		return creatorId;
 	}
 
 	/**
 	 * @param creator the creator to set
 	 */
-	public void setCreator(Integer creator) {
-		this.creator = creator;
+	public void setCreatorId(Integer creatorId) {
+		this.creatorId = creatorId;
 	}
 
 	/**
@@ -109,11 +119,6 @@ public class CreateActivityParameters {
 	 */
 	public void setEventId(Integer eventId) {
 		this.eventId = eventId;
-	}
-	
-
-
-	
-	
+	}	
 	
 }

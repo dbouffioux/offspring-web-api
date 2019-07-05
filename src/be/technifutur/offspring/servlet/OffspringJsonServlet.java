@@ -119,7 +119,7 @@ public class OffspringJsonServlet extends HttpServlet {
 			} else if (pathInfo.startsWith("/createActivity")) {
 				CreateActivityParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateActivityParameters.class);
-				System.out.println("in");
+				System.out.println(parameters.toString());
 				json = mapper.writeValueAsString(repository.createNewActivity(parameters));				
 			}
 		} catch (Exception e) {
