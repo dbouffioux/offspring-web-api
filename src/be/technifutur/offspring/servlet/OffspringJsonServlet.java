@@ -144,6 +144,10 @@ public class OffspringJsonServlet extends HttpServlet {
 				String[] parts = pathInfo.split("/");
 				int id = Integer.parseInt(parts[2]);
 				deleted = this.repository.deleteActivity(id);
+			} else if(pathInfo.startsWith("/event")) {
+				String[] parts = pathInfo.split("/");
+				int id = Integer.parseInt(parts[2]);
+				deleted = this.repository.deleteEvent(id);
 			}
 		} catch (Exception e) {
 			response.setStatus(404);
