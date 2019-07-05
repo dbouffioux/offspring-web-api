@@ -21,6 +21,7 @@ import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.repository.DataRepository;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
+import be.technifutur.offspring.servlet.parameters.CreateEventParameters;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
@@ -120,8 +121,11 @@ public class OffspringJsonServlet extends HttpServlet {
 			} else if (pathInfo.startsWith("/createActivity")) {
 				CreateActivityParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateActivityParameters.class);
-				System.out.println(parameters.toString());
 				json = mapper.writeValueAsString(repository.createNewActivity(parameters));
+			} else if (pathInfo.startsWith("/createEvent")) {
+				CreateEventParameters parameters = mapper.readValue(request.getInputStream(),
+						CreateEventParameters.class);
+				json = mapper.writeValueAsString(repository.createNewEvent(parameters));
 			}
 		} catch (Exception e) {
 			response.setStatus(404);
@@ -139,17 +143,14 @@ public class OffspringJsonServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String pathInfo = request.getPathInfo();
 		boolean deleted = false;
-		
+		String[] parts = pathInfo.split("/");
+		int id = Integer.parseInt(parts[2]);
 
 		try {
 			if (pathInfo.startsWith("/activity")) {
-				String[] parts = pathInfo.split("/");
-				int id = Integer.parseInt(parts[2]);
 				deleted = this.repository.deleteActivity(id);
 				
 			} else if(pathInfo.startsWith("/event")) {
- 				String[] parts = pathInfo.split("/");
- 				int id = Integer.parseInt(parts[2]);
  				deleted = this.repository.deleteEvent(id);	
  			}
 		} catch (Exception e) {

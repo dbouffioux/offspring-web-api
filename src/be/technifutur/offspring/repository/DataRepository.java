@@ -22,6 +22,7 @@ import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
+import be.technifutur.offspring.servlet.parameters.CreateEventParameters;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
 
@@ -323,6 +324,25 @@ public class DataRepository {
 
 		return findActivityById(id);
 	}
+	
+	public Event createNewEvent(CreateEventParameters parameters) {
+		Integer id = null;
+		if (parameters.getName() != null && !parameters.getName().isBlank() && parameters.getDateDebut() != null
+				&& parameters.getHeureDebut() != null && parameters.getDateFin() != null
+				&& parameters.getHeureFin() != null && parameters.getCreatorId() != null) {
+			try (Connection connection = createConnection()) {
+				connection.setAutoCommit(true);
+				
+				id = storeEventAndReturnGeneratedId(connection, parameters.getName(), parameters.getDateDebut(),
+						parameters.getHeureDebut(), parameters.getDateFin(), parameters.getHeureFin(),
+						parameters.getCreatorId());
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		return findEventById(id);
+	}
 
 	protected Integer storeActivityAndReturnGeneratedId(Connection connection, String name, String dateDebut,
 			String heureDebut, String dateFin, String heureFin, Integer creator, Integer eventId) throws SQLException {
@@ -340,6 +360,33 @@ public class DataRepository {
 			statement.setInt(5, eventId);
 			statement.setTime(6, Time.valueOf(heureFin));
 			statement.setTime(7, Time.valueOf(heureDebut));
+
+			statement.executeUpdate();
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			}
+		}
+
+		return id;
+	}
+	
+	protected Integer storeEventAndReturnGeneratedId(Connection connection, String name, String dateDebut,
+			String heureDebut, String dateFin, String heureFin, Integer creatorId) throws SQLException {
+
+		Integer id = null;
+
+		try (PreparedStatement statement = connection.prepareStatement("INSERT INTO event("
+				+ "	name, \"startDate\", \"endDate\", creator_id, \"endTime\", \"startTime\") "
+				+ "	VALUES (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+			System.out.println(dateDebut);
+			statement.setString(1, name);
+			statement.setDate(2, Date.valueOf(dateDebut));
+			statement.setDate(3, Date.valueOf(dateFin));
+			statement.setInt(4, creatorId);
+			statement.setTime(5, Time.valueOf(heureFin));
+			statement.setTime(6, Time.valueOf(heureDebut));
 
 			statement.executeUpdate();
 			try (ResultSet rs = statement.getGeneratedKeys()) {
