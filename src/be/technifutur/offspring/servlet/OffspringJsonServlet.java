@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
+import be.technifutur.offspring.beans.Registration;
 import be.technifutur.offspring.repository.DataRepository;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
@@ -91,6 +92,12 @@ public class OffspringJsonServlet extends HttpServlet {
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(events);
 
+				response.getWriter().write(json);
+			} else if(pathInfo.startsWith("/registration")) {
+				List<Registration> registrations = repository.findAllRegistration();
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(registrations);
+				
 				response.getWriter().write(json);
 			}
 		} catch (Exception e) {

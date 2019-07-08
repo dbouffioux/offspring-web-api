@@ -642,4 +642,25 @@ public class DataRepository {
 		System.out.println("in");
 		return deleted;
 	}
+
+	public List<Registration> findAllRegistration() {
+		List<Registration> registrations = new ArrayList<Registration>();
+		String sql = "SELECT * FROM registration";
+		
+		
+		try (Connection connection = createConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sql)) {
+			while (resultSet.next()) {
+				Registration registration = createRegistration(resultSet);
+				registrations.add(registration);
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return registrations;
+	}
+	
+	
 }
