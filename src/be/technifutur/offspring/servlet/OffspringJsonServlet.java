@@ -83,13 +83,24 @@ public class OffspringJsonServlet extends HttpServlet {
 				List<Activity> activity = repository.findAllActivity();
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(activity);
-
 				response.getWriter().write(json);
+				
 			} else if (pathInfo.startsWith("/event")) {
-				List<Event> events = repository.findAllEvent();
+				
+				String[] parts = pathInfo.split("/");
+				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
-				String json = mapper.writeValueAsString(events);
-
+				
+				if(parts.length >= 3) {
+					int id = Integer.parseInt(parts[2]);
+					Event event = repository.findEventById(id);
+					json = mapper.writeValueAsString(event);
+				}
+				else {
+					List<Event> events = repository.findAllEvent();
+					json = mapper.writeValueAsString(events);
+				}
+				
 				response.getWriter().write(json);
 			}
 		} catch (Exception e) {

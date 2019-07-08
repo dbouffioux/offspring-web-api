@@ -200,6 +200,7 @@ public class DataRepository {
 	}
 
 	private Event createEvent(ResultSet rs) throws SQLException {
+
 		int id = rs.getInt("id");
 		String name = rs.getString("name");
 		LocalDate startDate = LocalDate.parse(rs.getDate("StartDate").toString());
@@ -208,6 +209,7 @@ public class DataRepository {
 		LocalTime endTime = LocalTime.parse(rs.getTime("EndTime").toString());
 		int creatorId = rs.getInt("creator_id");
 		List<Activity> activities = findAllActivityByEventId(id);
+		
 		return new Event(id, name, startDate, endDate, startTime, endTime, creatorId, activities);
 	}
 
@@ -400,7 +402,7 @@ public class DataRepository {
 		return id;
 	}
 
-	protected Activity findActivityById(Integer id) {
+	public Activity findActivityById(Integer id) {
 		Activity activity = null;
 
 		String sql = "SELECT * FROM activity WHERE id = ? ";
@@ -504,8 +506,7 @@ public class DataRepository {
 		return deleted;
 	}
 
-	@SuppressWarnings("unused")
-	private Event findEventById(int id) {
+	public Event findEventById(int id) {
 		
 		Event event = null;
 		String sql = "SELECT * FROM Event WHERE id = ?";
