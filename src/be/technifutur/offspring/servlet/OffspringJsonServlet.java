@@ -137,7 +137,7 @@ public class OffspringJsonServlet extends HttpServlet {
 			}else if (pathInfo.startsWith("/create-registration")) {
 				CreateRegistrationParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateRegistrationParameters.class);
-				json = mapper.writeValueAsString(repository.createNewRegistration(parameters));
+				json = repository.createNewRegistration(parameters);
 			}
 		} catch (Exception e) {
 			response.setStatus(404);

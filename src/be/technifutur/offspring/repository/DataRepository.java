@@ -530,22 +530,31 @@ public class DataRepository {
 
 	}
 
-	public Registration createNewRegistration(CreateRegistrationParameters parameters) {
+	public String createNewRegistration(CreateRegistrationParameters parameters) throws JsonProcessingException {
 		Registration registration = null;
 		Integer id = null;
+		String result = "";
 
 		if (parameters.getPersonId() != null && parameters.getActivityId() != null) {
 			try (Connection connection = createConnection()) {
 				if (!registrationExist(parameters.getPersonId(), parameters.getActivityId())) {
-					System.out.println("good way");
-					id = storeRegistrationAndReturnGeneratedId(connection, parameters);
+					if (checkAvailabilityOfPerson(parameters)) {
+						id = storeRegistrationAndReturnGeneratedId(connection, parameters);
+						ObjectMapper Obj = new ObjectMapper();
+						result = Obj.writeValueAsString(findRegistrationById(id));
+					}else {
+						result = "{\"error\":\"Registration in conflict whith another one\"}";
+					}
+					
+				} else {
+					result = "{\"error\":\"Registration exist\"}";
 				}
 			} catch (SQLException e) {
 				// TODO: handle exception
 			}
 		}
 
-		return findRegistrationById(id);
+		return result;
 	}
 
 	protected Boolean registrationExist(int personId, int activityId) {
@@ -599,7 +608,7 @@ public class DataRepository {
 
 		try (Connection connection = createConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
-			connection.setAutoCommit(true);
+
 			System.out.println(id);
 			statement.setInt(1, id);
 
@@ -662,5 +671,63 @@ public class DataRepository {
 		return registrations;
 	}
 	
+	protected List<Registration> findAllRegistrationByPersonId(Integer id) {
+		List<Registration> registrations = new ArrayList<Registration>();
+		String sql = "SELECT * FROM registration WHERE id_person = ?";
+		
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, id);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					Registration registration = createRegistration(resultSet);
+					registrations.add(registration);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return registrations;
+	}
 	
+	protected Boolean checkAvailabilityOfPerson(CreateRegistrationParameters parameters) {
+		Boolean available = true;
+		List<Registration> registrations = findAllRegistrationByPersonId(parameters.getPersonId());
+		Activity newActivity = findActivityById(parameters.getActivityId());
+		
+		for (Registration registration : registrations) {
+			Activity activity = findActivityById(registration.getActivityId());
+			LocalDateTime start = LocalDateTime.of(activity.getDateDebut(), activity.getHeureDebut());
+			LocalDateTime end = LocalDateTime.of(activity.getDateFin(), activity.getHeureFin());
+			LocalDateTime newStart = LocalDateTime.of(newActivity.getDateDebut(), newActivity.getHeureDebut());
+			LocalDateTime newEnd = LocalDateTime.of(newActivity.getDateFin(), newActivity.getHeureFin());
+			
+			if (!checkDateOfActivity(start, newStart, end, newEnd)) {
+				available = false;
+			}
+			
+
+		}
+		
+		
+		return available;
+	}
+	
+	protected boolean checkDateOfActivity(LocalDateTime start, LocalDateTime newStart, LocalDateTime end, LocalDateTime newEnd) {
+		boolean ok = true;
+		
+		if (start.isAfter(newStart) && start.isBefore(end)) {
+			ok = false;
+		}else if (end.isAfter(newStart) && end.isBefore(newEnd)) {
+			ok = false;
+		}else if (newStart.isAfter(start) && newStart.isBefore(end)) {
+			ok = false;
+		}else if (newEnd.isAfter(start) && newEnd.isBefore(end)) {
+			ok = false;
+		}
+		
+		return ok;
+	}
 }
