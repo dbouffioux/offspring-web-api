@@ -24,6 +24,7 @@ import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUp
 import be.technifutur.offspring.servlet.parameters.CreateEventParameters;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
+import be.technifutur.offspring.servlet.parameters.CreateRegistrationParameters;
 
 /**
  * Servlet implementation class OffspringJsonServlet
@@ -126,6 +127,10 @@ public class OffspringJsonServlet extends HttpServlet {
 				CreateEventParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateEventParameters.class);
 				json = mapper.writeValueAsString(repository.createNewEvent(parameters));
+			}else if (pathInfo.startsWith("/create-registration")) {
+				CreateRegistrationParameters parameters = mapper.readValue(request.getInputStream(),
+						CreateRegistrationParameters.class);
+				json = mapper.writeValueAsString(repository.createNewRegistration(parameters));
 			}
 		} catch (Exception e) {
 			response.setStatus(404);
@@ -152,6 +157,9 @@ public class OffspringJsonServlet extends HttpServlet {
 				
 			} else if(pathInfo.startsWith("/event")) {
  				deleted = this.repository.deleteEvent(id);	
+ 			} else if(pathInfo.startsWith("/registration")) {
+ 				System.out.println(id);
+ 				deleted = this.repository.deleteRegistration(id);
  			}
 		} catch (Exception e) {
 			response.setStatus(404);

@@ -1,8 +1,8 @@
 package be.technifutur.offspring.servlet.parameters;
 
 public class CreateRegistrationParameters {
-	private int activityId;
-	private int personId;
+	private Integer activityId;
+	private Integer personId;
 	
 	public CreateRegistrationParameters() {
 		
@@ -11,29 +11,31 @@ public class CreateRegistrationParameters {
 	/**
 	 * @return the activityId
 	 */
-	public int getActivityId() {
+	public Integer getActivityId() {
 		return activityId;
 	}
 
 	/**
 	 * @param activityId the activityId to set
 	 */
-	public void setActivityId(int activityId) {
+	public void setActivityId(Integer activityId) {
 		this.activityId = activityId;
 	}
 
 	/**
 	 * @return the personId
 	 */
-	public int getPersonId() {
+	public Integer getPersonId() {
 		return personId;
 	}
 
 	/**
 	 * @param personId the personId to set
 	 */
-	public void setPersonId(int personId) {
+	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
+
+	
 	
 }

@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import be.technifutur.offspring.beans.Activity;
 import be.technifutur.offspring.beans.Event;
 import be.technifutur.offspring.beans.Person;
+import be.technifutur.offspring.beans.Registration;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParameters;
 import be.technifutur.offspring.servlet.parameters.CreateActivityParametersForUpdate;
 import be.technifutur.offspring.servlet.parameters.CreateEventParameters;
 import be.technifutur.offspring.servlet.parameters.CreateLoginParameters;
 import be.technifutur.offspring.servlet.parameters.CreatePersonParameters;
+import be.technifutur.offspring.servlet.parameters.CreateRegistrationParameters;
 
 public class DataRepository {
 	private String url;
@@ -324,7 +326,7 @@ public class DataRepository {
 
 		return findActivityById(id);
 	}
-	
+
 	public Event createNewEvent(CreateEventParameters parameters) {
 		Integer id = null;
 		if (parameters.getName() != null && !parameters.getName().isBlank() && parameters.getDateDebut() != null
@@ -332,7 +334,7 @@ public class DataRepository {
 				&& parameters.getHeureFin() != null && parameters.getCreatorId() != null) {
 			try (Connection connection = createConnection()) {
 				connection.setAutoCommit(true);
-				
+
 				id = storeEventAndReturnGeneratedId(connection, parameters.getName(), parameters.getDateDebut(),
 						parameters.getHeureDebut(), parameters.getDateFin(), parameters.getHeureFin(),
 						parameters.getCreatorId());
@@ -340,7 +342,7 @@ public class DataRepository {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		return findEventById(id);
 	}
 
@@ -371,15 +373,16 @@ public class DataRepository {
 
 		return id;
 	}
-	
+
 	protected Integer storeEventAndReturnGeneratedId(Connection connection, String name, String dateDebut,
 			String heureDebut, String dateFin, String heureFin, Integer creatorId) throws SQLException {
 
 		Integer id = null;
 
-		try (PreparedStatement statement = connection.prepareStatement("INSERT INTO event("
-				+ "	name, \"startDate\", \"endDate\", creator_id, \"endTime\", \"startTime\") "
-				+ "	VALUES (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+		try (PreparedStatement statement = connection.prepareStatement(
+				"INSERT INTO event(" + "	name, \"startDate\", \"endDate\", creator_id, \"endTime\", \"startTime\") "
+						+ "	VALUES (?, ?, ?, ?, ?, ?);",
+				Statement.RETURN_GENERATED_KEYS)) {
 			System.out.println(dateDebut);
 			statement.setString(1, name);
 			statement.setDate(2, Date.valueOf(dateDebut));
@@ -477,36 +480,36 @@ public class DataRepository {
 
 		return updated;
 	}
-	
+
 	public boolean deleteEvent(int id) {
 
 		boolean deleted = false;
-	
+
 		try (Connection connection = createConnection()) {
 			List<Activity> activities = this.findAllActivityByEventId(id);
-			
+
 			for (Activity activity : activities) {
 				this.deleteActivity(activity.getId());
 			}
 			// delete event at the end
 			String sql = "DELETE FROM event WHERE id = ?";
-			try (PreparedStatement query = connection.prepareStatement(sql)){
+			try (PreparedStatement query = connection.prepareStatement(sql)) {
 				query.setInt(1, id);
 				query.executeUpdate();
 				int updatedRows = query.getUpdateCount();
 				deleted = updatedRows > 0;
 			}
-			
+
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
 		}
-		
+
 		return deleted;
 	}
 
 	@SuppressWarnings("unused")
 	private Event findEventById(int id) {
-		
+
 		Event event = null;
 		String sql = "SELECT * FROM Event WHERE id = ?";
 
@@ -522,8 +525,121 @@ public class DataRepository {
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
 		}
-		
+
 		return event;
 
+	}
+
+	public Registration createNewRegistration(CreateRegistrationParameters parameters) {
+		Registration registration = null;
+		Integer id = null;
+
+		if (parameters.getPersonId() != null && parameters.getActivityId() != null) {
+			try (Connection connection = createConnection()) {
+				if (!registrationExist(parameters.getPersonId(), parameters.getActivityId())) {
+					System.out.println("good way");
+					id = storeRegistrationAndReturnGeneratedId(connection, parameters);
+				}
+			} catch (SQLException e) {
+				// TODO: handle exception
+			}
+		}
+
+		return findRegistrationById(id);
+	}
+
+	protected Boolean registrationExist(int personId, int activityId) {
+		Boolean exist = false;
+
+		String sql = "SELECT * " + "FROM registration " + "WHERE ? = id_person AND id_activity = ? ";
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, personId);
+			statement.setInt(2, activityId);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					exist = true;
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		System.out.println(exist);
+
+		return exist;
+	}
+
+	protected Integer storeRegistrationAndReturnGeneratedId(Connection connection,
+			CreateRegistrationParameters parameters) throws SQLException {
+		Integer id = null;
+
+		String sql = "INSERT INTO registration(id_person, id_activity) VALUES (?, ?)";
+
+		try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+			statement.setInt(1, parameters.getPersonId());
+			statement.setInt(2, parameters.getActivityId());
+
+			statement.executeUpdate();
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					id = rs.getInt(1);
+				}
+			}
+		}
+
+		return id;
+	}
+
+	protected Registration findRegistrationById(Integer id) {
+		Registration registration = null;
+		String sql = "SELECT * FROM registration WHERE id = ? ";
+
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			connection.setAutoCommit(true);
+			System.out.println(id);
+			statement.setInt(1, id);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					registration = createRegistration(resultSet);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+
+		return registration;
+	}
+
+	protected Registration createRegistration(ResultSet rs) throws SQLException {
+		Registration registration = null;
+
+		registration = new Registration(rs.getInt("id_person"), rs.getInt("id_activity"));
+
+		return registration;
+	}
+
+	public Boolean deleteRegistration(Integer id) {
+		Boolean deleted = false;
+
+		String sql = "DELETE FROM registration WHERE id = ?";
+		try (Connection connection = createConnection(); PreparedStatement query = connection.prepareStatement(sql)) {
+			
+			query.setInt(1, id);
+			query.executeUpdate();
+
+			int updatedRows = query.getUpdateCount();
+			deleted = updatedRows > 0;
+
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		System.out.println("in");
+		return deleted;
 	}
 }
