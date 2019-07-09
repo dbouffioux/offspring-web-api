@@ -216,14 +216,6 @@ public class DataRepository {
 	}
 
 	private Activity createActivity(ResultSet rs) throws SQLException {
-//		int id = rs.getInt(1);
-//		String name = rs.getString(2);
-//		LocalDate dateDebut = LocalDate.parse(rs.getDate(3).toString());
-//		LocalTime heureDebut = LocalTime.parse(rs.getTime(4).toString());
-//		LocalDate dateFin = LocalDate.parse(rs.getDate(5).toString());
-//		LocalTime heureFin = LocalTime.parse(rs.getTime(6).toString());
-//		int creatorId = rs.getInt(7);
-//		int eventId = rs.getInt("event_id");
 
 		int id = rs.getInt("id");
 		String name = rs.getString("name");

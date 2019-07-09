@@ -155,11 +155,9 @@ public class OffspringJsonServlet extends HttpServlet {
 				CreateEventParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateEventParameters.class);
 				json = mapper.writeValueAsString(repository.createNewEvent(parameters));
-			}else if (pathInfo.startsWith("/create-registration")) {
-				
+			}else if (pathInfo.startsWith("/create-registration")) {				
 				CreateRegistrationParameters parameters = mapper.readValue(request.getInputStream(),
-						CreateRegistrationParameters.class);
-				
+						CreateRegistrationParameters.class);				
 				json = repository.createNewRegistration(parameters);
 			}
 		} catch (Exception e) {
@@ -183,8 +181,7 @@ public class OffspringJsonServlet extends HttpServlet {
 
 		try {
 			if (pathInfo.startsWith("/activity")) {
-				deleted = this.repository.deleteActivity(id);
-				
+				deleted = this.repository.deleteActivity(id);				
 			} else if(pathInfo.startsWith("/event")) {
  				deleted = this.repository.deleteEvent(id);	
  			} else if(pathInfo.startsWith("/registration")) {
