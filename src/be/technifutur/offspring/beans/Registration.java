@@ -1,11 +1,12 @@
 package be.technifutur.offspring.beans;
 
 public class Registration {
+	private int id;
 	private int personId;
 	private int activityId;
 	
-	public Registration(int personId, int activityId) {
-		super();
+	public Registration(int id, int personId, int activityId) {
+		this.id = id;
 		this.personId = personId;
 		this.activityId = activityId;
 	}
@@ -36,6 +37,20 @@ public class Registration {
 	 */
 	public void setActivityId(int activityId) {
 		this.activityId = activityId;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 }

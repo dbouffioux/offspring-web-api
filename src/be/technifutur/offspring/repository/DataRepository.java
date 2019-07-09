@@ -356,7 +356,6 @@ public class DataRepository {
 		try (PreparedStatement statement = connection.prepareStatement("INSERT INTO activity(\r\n"
 				+ "	name, \"startDate\", \"endDate\", creator_id, event_id, \"endTime\", \"startTime\")\r\n"
 				+ "	VALUES (?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
-			System.out.println(dateDebut);
 			statement.setString(1, name);
 			statement.setDate(2, Date.valueOf(dateDebut));
 			statement.setDate(3, Date.valueOf(dateFin));
@@ -385,12 +384,12 @@ public class DataRepository {
 				"INSERT INTO event(" + "	name, \"startDate\", \"endDate\", creator_id, \"endTime\", \"startTime\") "
 						+ "	VALUES (?, ?, ?, ?, ?, ?);",
 				Statement.RETURN_GENERATED_KEYS)) {
-			System.out.println(dateDebut);
+
 			statement.setString(1, name);
 			statement.setDate(2, Date.valueOf(dateDebut));
 			statement.setDate(3, Date.valueOf(dateFin));
 			statement.setInt(4, creatorId);
-			System.out.println(heureFin);
+
 			statement.setTime(5, Time.valueOf(heureFin));
 			statement.setTime(6, Time.valueOf(heureDebut));
 
@@ -576,7 +575,7 @@ public class DataRepository {
 		} catch (SQLException sqle) {
 			throw new RuntimeException(sqle);
 		}
-		System.out.println(exist);
+
 
 		return exist;
 	}
@@ -610,7 +609,6 @@ public class DataRepository {
 		try (Connection connection = createConnection();
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
-			System.out.println(id);
 			statement.setInt(1, id);
 
 			try (ResultSet resultSet = statement.executeQuery()) {
@@ -627,8 +625,8 @@ public class DataRepository {
 
 	protected Registration createRegistration(ResultSet rs) throws SQLException {
 		Registration registration = null;
-
-		registration = new Registration(rs.getInt("id_person"), rs.getInt("id_activity"));
+		System.out.println(rs.getInt("id"));
+		registration = new Registration(rs.getInt("id"), rs.getInt("id_person"), rs.getInt("id_activity"));
 
 		return registration;
 	}
@@ -649,7 +647,7 @@ public class DataRepository {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		System.out.println("in");
+
 		return deleted;
 	}
 
@@ -672,7 +670,7 @@ public class DataRepository {
 		return registrations;
 	}
 	
-	protected List<Registration> findAllRegistrationByPersonId(Integer id) {
+	public List<Registration> findAllRegistrationByPersonId(Integer id) {
 		List<Registration> registrations = new ArrayList<Registration>();
 		String sql = "SELECT * FROM registration WHERE id_person = ?";
 		
