@@ -731,4 +731,54 @@ public class DataRepository {
 		
 		return ok;
 	}
+
+	public List<Event> findRegistrationsByPersonId(int id) {
+		
+		List<Event> list = null;
+		int firstId;
+		String sql = "SELECT a.\"id\" as \"activity_id\", a.event_id as \"event_id\" " +
+				"FROM Activity a " + 
+				"JOIN Event e ON a.event_id = e.id " + 
+				"WHERE a.id IN (SELECT r.id_activity " + 
+				"			FROM registration r  " + 
+				"			WHERE id_person = ?) " + 
+				"ORDER BY a.event_id";
+		
+		try (Connection connection = createConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			
+			statement.setInt(1, id);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+			
+				Integer previousId = null;
+				Integer currentId = null;
+				Event event = null;
+				Activity activity = null;
+				List<Activity> listActivity = new ArrayList<Activity>();
+				
+				while (resultSet.next()) {
+
+					if (previousId.equals(null)) { 
+						previousId = resultSet.getInt("event_id");
+					} 
+					currentId = resultSet.getInt("event_id");
+					
+					if (currentId != previousId) {
+						event = this.findEventById(resultSet.getInt("event_id"));
+						event.setListActivity(listActivity);
+						listActivity = new ArrayList<Activity>();
+						previousId = resultSet.getInt("event_id");
+					}
+					
+					activity = this.findActivityById(resultSet.getInt("activity_id"));
+					listActivity.add(activity);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new RuntimeException(sqle);
+		}
+		
+		return list;
+	}
 }

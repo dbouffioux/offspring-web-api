@@ -110,7 +110,18 @@ public class OffspringJsonServlet extends HttpServlet {
 				String json = mapper.writeValueAsString(registrations);
 				
 				response.getWriter().write(json);
+			} else if (pathInfo.startsWith("/registration-list")) {
+				String[] parts = pathInfo.split("/");
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				
+				if(parts.length >= 3) {
+					int id = Integer.parseInt(parts[2]);
+					List<Event> registrationList = repository.findRegistrationsByPersonId(id);
+					json = mapper.writeValueAsString(registrationList);
+				}
 			}
+			
 		} catch (Exception e) {
 			response.setStatus(404);
 			throw new ServletException(e);
