@@ -104,7 +104,16 @@ public class OffspringJsonServlet extends HttpServlet {
 				}
 				
 				response.getWriter().write(json);
-			} else if(pathInfo.startsWith("/registration")) {
+			} else if(pathInfo.startsWith("/registration/")) {
+				String[] parts = pathInfo.split("/");
+				int id = Integer.parseInt(parts[2]);
+				List<Registration> registrations = repository.findAllRegistrationByPersonId(id);
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(registrations);
+				
+				response.getWriter().write(json);
+			}
+			else if(pathInfo.startsWith("/registration")) {
 				List<Registration> registrations = repository.findAllRegistration();
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(registrations);
@@ -127,6 +136,7 @@ public class OffspringJsonServlet extends HttpServlet {
 		ObjectMapper mapper = new ObjectMapper();
 		String pathInfo = request.getPathInfo();
 		String json = null;
+		System.out.println(pathInfo);
 
 		try {
 			if (pathInfo.startsWith("/login")) {
@@ -146,8 +156,10 @@ public class OffspringJsonServlet extends HttpServlet {
 						CreateEventParameters.class);
 				json = mapper.writeValueAsString(repository.createNewEvent(parameters));
 			}else if (pathInfo.startsWith("/create-registration")) {
+				
 				CreateRegistrationParameters parameters = mapper.readValue(request.getInputStream(),
 						CreateRegistrationParameters.class);
+				
 				json = repository.createNewRegistration(parameters);
 			}
 		} catch (Exception e) {
@@ -200,6 +212,7 @@ public class OffspringJsonServlet extends HttpServlet {
 
 		try {
 			if (pathInfo.startsWith("/update-activity")) {
+				System.out.println(request.getInputStream());
 				CreateActivityParametersForUpdate parameters= mapper.readValue(request.getInputStream(),
 						CreateActivityParametersForUpdate.class);
 				updated = this.repository.updateActivity(parameters);

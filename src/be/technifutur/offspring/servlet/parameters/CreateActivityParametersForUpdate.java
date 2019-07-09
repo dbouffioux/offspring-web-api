@@ -7,7 +7,19 @@ public class CreateActivityParametersForUpdate {
 	private String heureDebut;
 	private String dateFin;
 	private String heureFin;
-	//private Integer creatorId;
+	private Integer creatorId;
+	/**
+	 * @return the creatorId
+	 */
+	public Integer getCreatorId() {
+		return creatorId;
+	}
+	/**
+	 * @param creatorId the creatorId to set
+	 */
+	public void setCreatorId(Integer creatorId) {
+		this.creatorId = creatorId;
+	}
 	private Integer eventId;
 	public CreateActivityParametersForUpdate() {
 
