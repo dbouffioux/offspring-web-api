@@ -33,7 +33,7 @@ import be.technifutur.offspring.servlet.parameters.CreateRegistrationParameters;
 @WebServlet("/json/*")
 public class OffspringJsonServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	protected DataRepository repository;
+	public DataRepository repository;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
