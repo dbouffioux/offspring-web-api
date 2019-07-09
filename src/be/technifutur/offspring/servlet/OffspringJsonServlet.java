@@ -95,7 +95,7 @@ public class OffspringJsonServlet extends HttpServlet {
 				
 				if(parts.length >= 3) {
 					int id = Integer.parseInt(parts[2]);
-					//Event event = repository.findEventById(id);
+					Event event = repository.findEventById(id);
 					json = mapper.writeValueAsString(event);
 				}
 				else {
